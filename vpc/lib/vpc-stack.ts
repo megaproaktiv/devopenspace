@@ -8,7 +8,7 @@ export class VpcStack extends Stack {
     super(scope, id, props);
 
   // The code that defines your stack goes here
-  const vpc = new aws_ec2.Vpc(this, 'TheVPC', {
+  const vpc = new aws_ec2.Vpc(this, 'baseVPC', {
       cidr: "10.0.0.0/16"
    })
 
