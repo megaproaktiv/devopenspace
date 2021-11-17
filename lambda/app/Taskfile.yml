@@ -34,7 +34,7 @@ tasks:
       - aws lambda update-function-code --function-name  {{.FN}} --zip-file fileb://dist/main.zip
 
   itest:
-    desc: call lambda
+    desc: call lambda with event
     deps: [build]
     env: 
       AWS_PAGER: ""
@@ -55,6 +55,42 @@ tasks:
       - cmd: echo Invoke
         silent: true
       - time aws lambda invoke --function-name {{.FN}} --payload fileb://./testdata/put.json  testdata/result.json
+      - cmd: echo Table after
+        silent: true
+      - aws dynamodb scan --table-name {{.TABLE}}
+
+  itest2:
+    desc: put item on bucket lambda
+    deps: [build]
+    env: 
+      AWS_PAGER: ""
+    vars:
+      FN:      
+        sh: aws ssm get-parameter --name "devopenspacefunction" --query "Parameter.Value" --output text
+      TABLE:      
+        sh: aws ssm get-parameter --name "devopenspacetable" --query "Parameter.Value" --output text
+      BUCKET:      
+        sh: aws ssm get-parameter --name "devopenspacebucket" --query "Parameter.Value" --output text
+    cmds:
+      - cmd: date
+        silent: true
+      - cmd: echo Setup
+        silent: true
+      - aws dynamodb delete-item --table-name {{.TABLE}} --key file://./testdata/key-item.json
+      - cmd: echo Table before
+        silent: true
+      - aws dynamodb scan --table-name {{.TABLE}}
+      - cmd: echo Bucket before
+        silent: true
+      - aws s3 ls  {{.BUCKET}}
+      - cmd: echo Put
+        silent: true
+      - aws s3 cp testdata/item.txt s3://{{.BUCKET}}/item.txt
+      - cmd: sleep 2
+        silent: true
+      - cmd: echo Bucket after
+        silent: true
+      - aws s3 ls   {{.BUCKET}}
       - cmd: echo Table after
         silent: true
       - aws dynamodb scan --table-name {{.TABLE}}
