@@ -1,2 +1,7 @@
 lambda/app/dist
 .task
+cdktfvpc/.DS_Store
+container/app/dist
+container/infra/cdk.out
+container/infra/dist
+.DS_Store

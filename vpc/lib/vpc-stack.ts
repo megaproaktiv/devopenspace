@@ -14,6 +14,7 @@ export class VpcStack extends Stack {
 
    new aws_ssm.StringParameter(this, "basevpc", {
      stringValue: vpc.vpcId,
+     parameterName: "devopenspacevpc",
      description: "Vpc ID"
    })
 
